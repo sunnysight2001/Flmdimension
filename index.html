@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classic | FLM Transformational Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','sans-serif'],display:['Fraunces','serif']}}}}</script>
+<style>
+body{-webkit-font-smoothing:antialiased}
+.option-card{transition:all .18s ease}
+.option-card:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(16,24,40,.08)}
+.option-card.selected{border-color:#111827;background:#111827;color:white}
+.option-card.selected .opt-badge{background:white;color:#111827}
+.progress-fill{transition:width .35s ease}
+.fade{animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ---------- PRINT / PDF STYLES ---------- */
+@media print{
+  @page{ size:A4; margin:14mm 12mm; }
+  html,body{ background:#fff !important; }
+  header, footer,
+  #screen-welcome, #screen-quiz, #screen-admin,
+  #btn-download-json, #btn-download-csv, #btn-download-image, #btn-print, #btn-restart{
+    display:none !important;
+  }
+  #screen-report{ display:block !important; }
+  #screen-report .flex.flex-wrap.items-center.gap-3.justify-between{ display:block !important; }
+  /* Force every two-column grid inside the report into a single readable column */
+  #screen-report .grid{ display:block !important; }
+  #screen-report .grid > div{ width:100% !important; margin-bottom:14px; }
+  #screen-report .grid.md\:grid-cols-2{ display:block !important; }
+  #screen-report .grid.md\:grid-cols-2 > div{ width:100% !important; }
+
+  /* Never split a card, a list item, or a day-block across a page break */
+  #screen-report .rounded-\[24px\],
+  #screen-report .rounded-\[28px\],
+  #screen-report .rounded-2xl,
+  #screen-report .rounded-\[20px\],
+  #plan-30-60-90 > div,
+  #strengths > div,
+  #growth > div,
+  #checks li{
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  #plan-30-60-90 > div{ margin-bottom:16px; }
+
+  /* Give the radar chart room so its labels never clip */
+  #screen-report canvas#radar{
+    max-width:100% !important;
+    width:100% !important;
+    height:auto !important;
+  }
+  .print-radar-wrap{ min-height:340px; }
+
+  h1,h2,h3{ page-break-after: avoid; }
+  a[href]:after{ content:none !important; }
+}
+</style>
+</head>
+<body class="min-h-screen bg-[#f6f5f1] text-zinc-900 font-sans">
+<header class="sticky top-0 z-20 border-b border-zinc-200 bg-white/80 backdrop-blur">
+  <div class="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="h-9 w-9 rounded-xl bg-zinc-900 text-white grid place-items-center font-display text-[18px]">C</div>
+      <div><div class="text-[13px] tracking-[0.18em] font-semibold">CLASSIC</div><div class="text-[11px] text-zinc-500 -mt-1">FLM Transformational Assessment</div></div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="hidden md:flex items-center gap-2 text-[11px] text-zinc-500"><span class="h-2 w-2 rounded-full bg-emerald-500"></span> Offline • Private</div>
+    </div>
+  </div>
+</header>
+<main class="mx-auto max-w-6xl px-6 py-8 md:py-12">
+  <section id="screen-welcome" class="fade">
+    <div class="grid md:grid-cols-12 gap-8">
+      <div class="md:col-span-7">
+        <div class="inline-flex items-center gap-2 rounded-full bg-zinc-900 text-white px-3 py-1 text-[11px] tracking-wide">FOR AREA MANAGERS • CLASSIC DIVISION</div>
+        <h1 class="font-display text-[40px] md:text-[56px] leading-[0.95] mt-5">What kind of <br>First Line Leader<br><span class="text-zinc-400">are you becoming?</span></h1>
+        <p class="mt-6 text-[16px] leading-6 text-zinc-600 max-w-[56ch]">Not a right-wrong test. 25 real field situations to map how you think, coach and decide. 8-10 minutes. You get a personal map with strengths, growth edges and a practical 30-60-90 build plan.</p>
+        <div class="mt-8 grid grid-cols-3 gap-3 max-w-[480px]">
+          <div class="rounded-2xl bg-white border border-zinc-200 p-4"><div class="text-[22px] font-semibold">25</div><div class="text-[11px] text-zinc-500 uppercase tracking-wide">Real situations</div></div>
+          <div class="rounded-2xl bg-white border border-zinc-200 p-4"><div class="text-[22px] font-semibold">6</div><div class="text-[11px] text-zinc-500 uppercase tracking-wide">Leadership dimensions</div></div>
+          <div class="rounded-2xl bg-white border border-zinc-200 p-4"><div class="text-[22px] font-semibold">30-60-90</div><div class="text-[11px] text-zinc-500 uppercase tracking-wide">Build plan</div></div>
+        </div>
+        <div class="mt-8 rounded-2xl bg-white border border-zinc-200 p-5">
+          <div class="text-[12px] font-semibold tracking-wide">HOW IT WORKS</div>
+          <ul class="mt-3 space-y-2 text-[13px] text-zinc-600 list-disc pl-5">
+            <li>Pick what you <b>actually do</b> in last 2-3 months</li>
+            <li>All options are normal ABM behaviours</li>
+            <li>Report stays in your browser. Download as PDF</li>
+          </ul>
+        </div>
+      </div>
+      <div class="md:col-span-5">
+        <div class="rounded-[28px] bg-white border border-zinc-200 shadow-[0_20px_60px_rgba(0,0,0,.08)] p-7 md:p-8">
+          <div class="text-[13px] font-semibold tracking-wide">START YOUR PROFILE</div>
+          <div class="mt-6 space-y-4">
+            <div><label class="text-[12px] font-medium">Ecode *</label><input id="ecode" class="mt-1 w-full rounded-xl border border-zinc-200 px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-zinc-900" placeholder="e.g. 10452"></div>
+            <div><label class="text-[12px] font-medium">Full Name *</label><input id="pname" class="mt-1 w-full rounded-xl border border-zinc-200 px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-zinc-900" placeholder="e.g. Rahul Molasi"></div>
+            <div><label class="text-[12px] font-medium">HQ *</label><input id="hq" class="mt-1 w-full rounded-xl border border-zinc-200 px-4 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-zinc-900" placeholder="e.g. Pune"></div>
+            <div class="pt-2"><button id="btn-start" type="button" class="w-full rounded-xl bg-zinc-900 text-white py-3.5 text-[14px] font-semibold hover:bg-black transition">Continue →</button><div class="text-[11px] text-zinc-500 mt-3 text-center">~8 mins • You can go back</div></div>
+            <div id="start-error" class="hidden text-[12px] text-red-600"></div>
+          </div>
+        </div>
+        <div class="mt-4 rounded-2xl bg-zinc-900 text-zinc-100 p-5 text-[12px] leading-5"><div class="font-semibold text-white">For L&D:</div> Single file deploy. Data stays local + JSON import.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-quiz" class="hidden">
+    <div class="flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3"><div class="h-9 w-9 rounded-full bg-white border grid place-items-center text-[13px] font-semibold" id="q-count">1/25</div><div><div class="text-[12px] tracking-wide font-semibold" id="q-dim">FIELD EXECUTION</div><div class="text-[11px] text-zinc-500" id="q-progress-text"></div></div></div>
+      <div class="flex-1 max-w-[360px] mx-6 hidden md:block"><div class="h-2 rounded-full bg-zinc-200 overflow-hidden"><div id="progress-fill" class="progress-fill h-full bg-zinc-900" style="width:4%"></div></div></div>
+      <div class="text-[11px] text-zinc-500" id="user-chip">E123 • Pune</div>
+    </div>
+    <div class="mt-8 md:hidden"><div class="h-2 rounded-full bg-zinc-200 overflow-hidden"><div id="progress-fill-m" class="progress-fill h-full bg-zinc-900" style="width:4%"></div></div></div>
+    <div class="mt-8 grid md:grid-cols-12 gap-8">
+      <div class="md:col-span-7"><div class="rounded-[24px] bg-white border border-zinc-200 p-7 md:p-8"><h2 id="q-text" class="font-display text-[24px] leading-[1.15]"></h2><div id="q-options" class="mt-6 space-y-3"></div><div class="mt-8 flex items-center justify-between"><button id="btn-prev" class="rounded-xl border border-zinc-200 px-5 py-2.5 text-[13px] font-medium hover:bg-zinc-50">← Back</button><button id="btn-next" class="rounded-xl bg-zinc-900 text-white px-6 py-2.5 text-[13px] font-semibold disabled:opacity-30 disabled:cursor-not-allowed">Next →</button></div></div></div>
+      <div class="md:col-span-5 space-y-4"><div class="rounded-2xl bg-white border border-zinc-200 p-5"><div class="text-[11px] tracking-wide font-semibold">WHY THIS QUESTION?</div><div id="q-why" class="mt-2 text-[13px] leading-5 text-zinc-600"></div></div></div>
+    </div>
+  </section>
+
+  <section id="screen-report" class="hidden">
+    <div class="flex flex-wrap items-center gap-3 justify-between">
+      <div><div class="text-[12px] tracking-[0.18em] font-semibold">CLASSIC • PERSONAL PROFILE</div><h1 id="report-title" class="font-display text-[32px] md:text-[40px] leading-[1.05] mt-1"></h1><div id="report-meta" class="text-[12px] text-zinc-500 mt-2"></div></div>
+      <div class="flex gap-2"><button id="btn-download-json" class="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-[12px] font-semibold">JSON</button><button id="btn-download-csv" class="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-[12px] font-semibold">CSV</button><button id="btn-download-image" class="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-[12px] font-semibold">Image</button><button id="btn-print" class="rounded-xl bg-zinc-900 text-white px-5 py-2.5 text-[12px] font-semibold">Download PDF</button></div>
+    </div>
+    <div class="mt-8 grid md:grid-cols-12 gap-6">
+      <div class="md:col-span-5 rounded-[24px] bg-white border border-zinc-200 p-6"><div class="text-[12px] font-semibold tracking-wide">YOUR DIMENSION PROFILE</div><canvas id="radar" class="mt-4" height="320"></canvas><div id="dim-bars" class="mt-6 space-y-3"></div></div>
+      <div class="md:col-span-7 space-y-6">
+        <div class="rounded-[24px] bg-zinc-900 text-zinc-100 p-7"><div class="text-[11px] tracking-wide text-zinc-400 font-semibold">PERSONAL NARRATIVE</div><div id="narrative" class="mt-3 text-[15px] leading-7"></div></div>
+        <div class="grid md:grid-cols-2 gap-6"><div class="rounded-[20px] bg-white border border-zinc-200 p-6"><div class="text-[11px] font-semibold tracking-wide">YOUR STRENGTH AREAS</div><div id="strengths" class="mt-4 space-y-4"></div></div><div class="rounded-[20px] bg-white border border-zinc-200 p-6"><div class="text-[11px] font-semibold tracking-wide">WHAT TO BUILD NEXT</div><div id="growth" class="mt-4 space-y-4"></div></div></div>
+        <div class="rounded-[20px] bg-white border border-zinc-200 p-6"><div class="text-[11px] font-semibold tracking-wide">DECISION CHECKS FOR YOU</div><ul id="checks" class="mt-4 space-y-2 text-[13px] leading-6 list-disc pl-5 text-zinc-700"></ul></div>
+        <div class="rounded-[24px] bg-white border border-zinc-900 p-6 md:p-7">
+          <div class="flex items-center gap-2"><div class="h-7 w-7 rounded-full bg-zinc-900 text-white grid place-items-center text-[12px]">→</div><div class="text-[12px] font-semibold tracking-wide">YOUR PRACTICAL 30-60-90 BUILD PLAN</div></div>
+          <div class="text-[12px] text-zinc-500 mt-2">Focused on your 2 growth dimensions.</div>
+          <div id="plan-30-60-90" class="mt-5 space-y-6"></div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-8 flex justify-center"><button id="btn-restart" class="rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-[12px] font-semibold">Start New Assessment</button></div>
+  </section>
+
+  <section id="screen-admin" class="hidden">
+    <div class="flex items-center justify-between"><div><div class="text-[12px] tracking-[0.18em] font-semibold">CLASSIC • ADMIN PORTAL</div><h1 class="font-display text-[32px] mt-1">Assessment Dashboard</h1></div><div class="flex gap-2"><button id="btn-admin-export-all" class="rounded-xl bg-zinc-900 text-white px-4 py-2 text-[12px] font-semibold">Export All CSV</button><button id="btn-admin-clear" class="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-[12px]">Clear Data</button><button id="btn-admin-back" class="rounded-xl border border-zinc-200 bg-white px-4 py-2 text-[12px]">← Back</button></div></div>
+    <div id="admin-login" class="mt-8 max-w-sm rounded-2xl bg-white border p-6"><div class="text-[12px] font-semibold">Enter Admin Code</div><input id="admin-code" type="password" class="mt-3 w-full rounded-xl border px-4 py-3 text-[14px]" placeholder="Enter code"><button id="btn-admin-login" class="mt-3 w-full rounded-xl bg-zinc-900 text-white py-3 text-[13px] font-semibold">Unlock</button><div id="admin-login-error" class="hidden text-[12px] text-red-600 mt-2"></div></div>
+    <div id="admin-content" class="hidden">
+      <div class="mt-8 grid md:grid-cols-4 gap-4">
+        <div class="rounded-2xl bg-white border p-5"><div class="text-[11px] text-zinc-500">Total Assessments</div><div id="admin-total" class="text-[28px] font-semibold">0</div></div>
+        <div class="rounded-2xl bg-white border p-5"><div class="text-[11px] text-zinc-500">Unique HQs</div><div id="admin-hqs" class="text-[28px] font-semibold">0</div></div>
+        <div class="rounded-2xl bg-white border p-5"><div class="text-[11px] text-zinc-500">Avg Score</div><div id="admin-avg" class="text-[28px] font-semibold">0%</div></div>
+        <div class="rounded-2xl bg-white border p-5"><div class="text-[11px] text-zinc-500">Import JSONs</div><input type="file" id="admin-import" multiple accept=".json" class="mt-2 text-[11px]"></div>
+      </div>
+      <div class="mt-6 grid md:grid-cols-12 gap-6">
+        <div class="md:col-span-5 rounded-2xl bg-white border p-6"><div class="text-[12px] font-semibold">Average Dimension Profile</div><canvas id="admin-radar" height="300" class="mt-4"></canvas><div id="admin-dim-bars" class="mt-6 space-y-2"></div></div>
+        <div class="md:col-span-7 rounded-2xl bg-white border p-6"><div class="flex items-center justify-between"><div class="text-[12px] font-semibold">All Assessments</div><input id="admin-search" placeholder="Search" class="rounded-xl border px-3 py-1.5 text-[12px] w-[200px]"></div><div id="admin-table" class="mt-4 overflow-auto max-h-[520px] text-[12px]"></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="mx-auto max-w-6xl px-6 pb-10 text-[11px] text-zinc-400">Classic FLM Assessment • Standalone HTML • Data stays on device unless you export.</footer>
+
+<script>
+const DIMS = {
+  FEJ:{code:'FEJ',name:'Field Execution & Digital-Ready JFW',short:'Field Execution',why:'How you run field days and joint calls — digital detailing as a habit, not a separate task',strength:'You turn JFW into coaching, and digital tools into another way to make the call land — not a checkbox.',build:'Move from checking SOPs to building field judgment, and make digital detailing a habit in 2 calls a day, not a fallback.',check:'Did I coach improvement today, or just check compliance and log a visit?'},
+  PCE:{code:'PCE',name:'People Development & Coaching Excellence',short:'People & Coaching',why:'How you develop MRs',strength:'Your team feels supported and grows. You coach barriers, not just pressure.',build:'Shift from giving instructions to asking reflective questions.',check:'Am I creating dependence or independent thinking?'},
+  TBD:{code:'TBD',name:'Territory & Business Diagnosis',short:'Business Diagnosis',why:'How you read territory data, competition and doctor behaviour before you react',strength:'You diagnose root cause - market, team skill, execution or doctor confidence - before pushing harder.',build:'Build a 5-whys habit before any push. Know which doctors moved because of a competitor vs your own gap.',check:'Have I diagnosed the real cause, or am I just reacting to the number?'},
+  SSC:{code:'SSC',name:'Scientific Selling Coaching',short:'Scientific Coaching',why:'How you coach your MRs to link science to a doctor\'s actual patient profile',strength:'You coach patient-linked detailing, not frequency-based selling. Doctors recall your MR for the patient story, not just the brand name.',build:'In JFW, ask "what patient does this doctor worry about" before every call, and coach your MR to build the same habit himself.',check:'Did my MR customize the science to this doctor\'s patients today, or repeat the standard pitch?'},
+  OIC:{code:'OIC',name:'Ownership, Integrity & Compliance',short:'Ownership & Integrity',why:'What drives your accountability - and where your line is when a shortcut is tempting',strength:'You take ownership of misses without blaming the system, and you hold the compliance line even under target pressure.',build:'When a scheme, expense claim or promise crosses the line, say so early - not after it becomes a problem.',check:'Am I building ownership or fear - and would I be comfortable explaining this claim to my RBM tomorrow?'}
+};
+const PLANS = {
+  FEJ:{title:'Field Execution & Digital-Ready JFW',d30:['Pick 1 JFW per week where you only ask questions for first 15 mins','Use CLM/e-detailing in at least 2 calls a day - not as a leave-behind','Log coaching notes in same diary as MR'],d60:['Do 2 reverse JFWs: let MR observe and coach you','Combine digital + physical: 1 min digital visual + 1 min patient story per call','Replace one SOP-check with a skill drill'],d90:['MRs run their own JFW prep and digital-detailing plan','15-20% of calls include a digital moment used with intent, not habit']},
+  PCE:{title:'People Development & Coaching Excellence',d30:['For each MR, write 1 barrier you think is stopping him - ask him','Use reflective questions: "What made that difficult?"','15-min weekly 1:1 only on development'],d60:['Make development plan: 1 skill to build in 60 days','Shadow underperformer for full day','Give feedforward: "Next time try X"'],d90:['MR starts coaching new joinee','Show 1 story where MR moved to independent thinking']},
+  TBD:{title:'Territory & Business Diagnosis',d30:['Before any push, write: Market? Team skill? Execution? Doctor confidence?','Find 3 doctors where competitor grew and you dropped','Ask each MR: "Biggest market barrier no scheme can solve?"'],d60:['Run 1 territory diagnosis meet: only what changed in market','For 2 missed targets, show 5-whys analysis','Create 1-page competitor battle card'],d90:['Your action plans start with diagnosis','You can predict 1 month early which HQ will miss']},
+  SSC:{title:'Scientific Selling Coaching (Patient Profile Customization)',d30:['List top 10 doctors and write what patient they see most: elderly knee OA, young sports injury, diabetic with pain','For each patient profile, make 2-line story: why our Brand / product suits them (e.g., for daily wage worker who needs quick relief)','In JFW, ask MR: "What patient does this doctor worry about?" - tailor call'],d60:['Use patient-profile card: Doctor + Common Patient Type + Our Brand Value','Collect 1 anonymized patient benefit story per HQ','Coach MRs to shift from "Sir our Brand is good" to "Sir for your OA patients who stand long, our Brand suits them because..."'],d90:['Doctors recall you for patient type, not just Brand name','Rx sticks because doctor links Brand to his patients needs']},
+  OIC:{title:'Ownership, Integrity & Compliance',d30:['Share one failure of yours and what you learned','Replace blame: "System failed" -> "What can we own?"','Write down one compliance grey area in your territory (billing, expense, sampling) and decide your own line before it is tested'],d60:['Let team decide one way of working for next month','Run one open conversation: "What would we never do to hit a number?"','Spot-check 2 MR expense/DCR entries for accuracy, not just approval speed'],d90:['Team shows ownership language: "my territory," not just "my target"','You are known as the ASM who hits numbers without cutting corners']}
+};
+const QUESTIONS = [
+  {id:1,dim:'FEJ',text:'During JFW, what is your main focus?',why:'JFW tool.',options:[{t:'Check if MR follows SOPs',p:2},{t:'Point out mistakes and correct',p:2},{t:'Help MR see what to improve and how',p:4},{t:'Assess territory health',p:3}]},
+  {id:2,dim:'PCE',text:'Your MR achieves sales but skips process steps.',why:'Result vs process.',options:[{t:'Leave it for now, results matter more',p:1},{t:'Give clear warning and check next JFW',p:2},{t:'Sit with him to understand why and coach gap',p:4},{t:'Ask for daily activity report',p:2}]},
+  {id:3,dim:'TBD',text:'A core HCP who was regular prescriber stops prescribing.',why:'Diagnosis vs push.',options:[{t:'Increase visit frequency and remind',p:3},{t:'Plan small engagement activity',p:2},{t:'Check what changed - coverage, competitor, confidence',p:4},{t:'Escalate to RBM',p:1}]},
+  {id:4,dim:'SSC',text:'Scientific discussions with Orthos are...',why:'Ortho credibility.',options:[{t:'Needed only for top KOLs',p:2},{t:'Mainly MR responsibility',p:1},{t:'Key to earn trust and long term Rx',p:4},{t:'Relevant only for premium Brands',p:1}]},
+  {id:5,dim:'OIC',text:'What motivates you most as an FLM?',why:'Motivation.',options:[{t:'Getting recognized as top performer',p:2},{t:'Seeing my team become a winning team',p:4},{t:'Growing to next level quickly',p:3},{t:'Being respected by doctors',p:3}]},
+  {id:6,dim:'FEJ',text:'Digital tools like CLM/e-detailing in your division are...',why:'Digital belief.',options:[{t:'Not needed in acute',p:1},{t:'Sometimes useful',p:2},{t:'Will be essential - mainly digital detailing',p:4},{t:'Only for HO',p:1}]},
+  {id:7,dim:'PCE',text:'How do you handle underperformers?',why:'Coaching philosophy.',options:[{t:'Put pressure and monitor daily',p:2},{t:'Coach to understand barriers and joint plan',p:4},{t:'Give less critical work',p:1},{t:'Escalate early',p:1}]},
+  {id:8,dim:'TBD',text:'Your team misses target for 2 months.',why:'Reaction to failure.',options:[{t:'Push harder on call average',p:2},{t:'Step back and diagnose gaps',p:4},{t:'Ask HO for scheme',p:1},{t:'Look to replace weak performers',p:1}]},
+  {id:9,dim:'SSC',text:'Long-term trust with doctors comes from...',why:'Sustained Rx.',options:[{t:'Frequent visits',p:2},{t:'Being available whenever',p:2},{t:'Consistent inputs customized to patient profile',p:4},{t:'Strong retailer push',p:1}]},
+  {id:10,dim:'OIC',text:'Your planned strategy fails.',why:'Learning agility.',options:[{t:'Team did not execute well',p:1},{t:'Quickly try another approach',p:2},{t:'Review what we learned and why it failed',p:4},{t:'Escalate and wait for HO',p:1}]},
+  {id:11,dim:'FEJ',text:'You have 8 calls planned today. How do you actually use digital detailing (CLM)?',why:'Digital as habit vs formality.',options:[{t:'Only if MR or HO insists',p:1},{t:'Use it as a leave-behind replacement only',p:2},{t:'Use it in 2 focused calls with a clear patient hook',p:4},{t:'Skip it - relationship works better',p:1}]},
+  {id:12,dim:'PCE',text:'How would your team describe you?',why:'Perceived style.',options:[{t:'Demanding on results',p:2},{t:'Supportive and approachable',p:4},{t:'Data-driven and strategic',p:4},{t:'Disciplined and systematic',p:3}]},
+  {id:13,dim:'TBD',text:'How do you view analytics and data?',why:'Data vs gut.',options:[{t:'It slows execution',p:1},{t:'Helps take smarter decisions',p:4},{t:'Field experience more reliable',p:2},{t:'Analytics is HO job',p:1}]},
+  {id:14,dim:'SSC',text:'Doctor prefers competitor despite same efficacy.',why:'Habit vs rapport.',options:[{t:'MR rapport not strong',p:2},{t:'Price higher',p:2},{t:'Doctors habit and confidence with competitor for patient type',p:4},{t:'Call average low',p:1}]},
+  {id:15,dim:'OIC',text:'Ideal culture you want to create?',why:'Culture.',options:[{t:'Fear and strict discipline',p:1},{t:'Friendly and easy',p:2},{t:'Ownership and accountability',p:4},{t:'Strong hierarchy and control',p:1}]},
+  {id:16,dim:'FEJ',text:'Which leadership approach do you relate to most during a field day?',why:'Natural style.',options:[{t:'Clear rules and strict follow-up',p:2},{t:'Build strong trust and connect',p:3},{t:'Use data to plan objectively',p:4},{t:'Coach my team to win on own',p:4}]},
+  {id:17,dim:'PCE',text:'Best way to coach a new MR?',why:'Coaching method.',options:[{t:'Tell exactly what to do',p:2},{t:'Do joint calls and show',p:2},{t:'Ask questions that make him think',p:4},{t:'Monitor daily calls closely',p:1}]},
+  {id:18,dim:'TBD',text:'Competitor launches aggressively.',why:'Strategic thinking.',options:[{t:'Push team to work harder',p:2},{t:'Study competitor, doctors and edge before acting',p:4},{t:'Increase visit frequency',p:3},{t:'Ask HO for counter scheme',p:1}]},
+  {id:19,dim:'SSC',text:'What is the future of Classic division selling?',why:'Market change.',options:[{t:'Only strong relationships',p:2},{t:'Whoever gives better schemes',p:1},{t:'Science + digital detailing + relationships',p:4},{t:'More coverage and push',p:2}]},
+  {id:20,dim:'OIC',text:'Your team is 8% short of quarterly target with 3 days left. A distributor offers to "adjust" billing on paper to close the gap.',why:'Numbers vs integrity.',options:[{t:'Accept - everyone does this to hit numbers',p:1},{t:'Ask HO/RBM before deciding',p:2},{t:'Decline, report the real number, and plan next quarter\'s catch-up',p:4},{t:'Do it quietly, just this once',p:1}]},
+  {id:21,dim:'FEJ',text:'You finish JFW with an MR and have 10 minutes before the next call. What do you do?',why:'What you do with small gaps.',options:[{t:'Check the next doctor\'s file only',p:2},{t:'Give quick corrective feedback',p:2},{t:'Ask the MR to reflect: what worked, what would you change?',p:4},{t:'Catch up on your own MIS',p:1}]},
+  {id:22,dim:'PCE',text:'Best outcome of good coaching?',why:'Success.',options:[{t:'Team reports on time',p:1},{t:'Team starts thinking and solving on own',p:4},{t:'Team follows compliance',p:2},{t:'Team escalates fast',p:1}]},
+  {id:23,dim:'TBD',text:'Best indicator of a healthy territory?',why:'What you measure.',options:[{t:'High call average',p:2},{t:'Strong doctor relationships',p:3},{t:'Steady growth in prescriptions',p:4},{t:'High reporting compliance',p:1}]},
+  {id:24,dim:'SSC',text:'A doctor says, "I already know your brand, no need to explain again."',why:'Habit vs relevance.',options:[{t:'Agree and move to the next doctor quickly',p:1},{t:'Repeat the standard product message anyway',p:1},{t:'Share one new patient-specific reason relevant to him today',p:4},{t:'Ask the MR to note it and move on',p:2}]},
+  {id:25,dim:'OIC',text:'One of your MRs claims full daily allowance for a day he left the field by 1pm for personal work.',why:'Integrity under pressure.',options:[{t:'Approve it - he\'s a good performer, let it go',p:1},{t:'Warn him privately but still approve the claim',p:2},{t:'Correct the claim and have a direct conversation about integrity',p:4},{t:'Ignore it - not worth the friction',p:1}]}
+];
+
+let state={ecode:'',name:'',hq:'',current:0,answers:Array(25).fill(null),shuffled:[]};
+function shuffle(a){return a.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1])}
+function initShuffled(){state.shuffled=QUESTIONS.map(q=>{const opts=q.options.map((o,i)=>({...o,origIndex:i}));return {...q,shuffledOptions:shuffle(opts)}})}
+function $(id){return document.getElementById(id)}
+function validateStart(){
+  const e=$('ecode').value.trim(),n=$('pname').value.trim(),h=$('hq').value.trim();
+  if(!e||!n||!h){
+    $('start-error').textContent='Please fill Ecode, Name and HQ.';
+    $('start-error').classList.remove('hidden');
+    return null;
+  }
+  $('start-error').classList.add('hidden');
+  return {ecode:e,name:n,hq:h}
+}
+function startQuiz(){
+  const v=validateStart();
+  if(!v) return;
+  state.ecode=v.ecode; state.name=v.name; state.hq=v.hq;
+  state.current=0; state.answers=Array(25).fill(null);
+  initShuffled();
+  $('screen-welcome').classList.add('hidden');
+  $('screen-quiz').classList.remove('hidden');
+  $('screen-report').classList.add('hidden');
+  $('screen-admin').classList.add('hidden');
+  $('user-chip').textContent=`${state.ecode} • ${state.hq}`;
+  renderQuestion();
+}
+function renderQuestion(){
+  const q=state.shuffled[state.current];
+  const dim=DIMS[q.dim];
+  $('q-count').textContent=`${state.current+1}/25`;
+  $('q-dim').textContent=dim.short.toUpperCase()+` • Q${q.id}`;
+  $('q-progress-text').textContent=dim.name;
+  $('q-text').textContent=q.text;
+  $('q-why').textContent=q.why;
+  const pct=Math.round((state.current/25)*100);
+  $('progress-fill').style.width=pct+'%';
+  const m=$('progress-fill-m'); if(m) m.style.width=pct+'%';
+  const container=$('q-options'); container.innerHTML='';
+  q.shuffledOptions.forEach((opt,idx)=>{
+    const selected=state.answers[state.current]===opt.origIndex;
+    const div=document.createElement('button');
+    div.className=`option-card w-full text-left rounded-2xl border border-zinc-200 bg-white p-4 flex gap-3 items-start ${selected?'selected':''}`;
+    div.innerHTML=`<div class="opt-badge h-7 w-7 rounded-full border border-zinc-200 grid place-items-center text-[11px] font-semibold shrink-0">${String.fromCharCode(65+idx)}</div><div class="text-[13.5px] leading-5">${opt.t}</div>`;
+    div.onclick=()=>{state.answers[state.current]=opt.origIndex; renderQuestion();};
+    container.appendChild(div);
+  });
+  $('btn-prev').disabled=state.current===0;
+  $('btn-next').disabled=state.answers[state.current]===null;
+  $('btn-next').textContent=state.current===24?'See My Report →':'Next →';
+}
+function nextQ(){ if(state.answers[state.current]===null) return; if(state.current<24){state.current++; renderQuestion();} else {showReport();} }
+function prevQ(){ if(state.current>0){state.current--; renderQuestion();} }
+function calculateScores(){let scores={}; Object.keys(DIMS).forEach(k=>scores[k]={total:0,max:0,pct:0}); state.answers.forEach((ansIdx,qPos)=>{const q=QUESTIONS[qPos]; const opt=q.options[ansIdx]; if(!opt) return; scores[q.dim].total+=opt.p; scores[q.dim].max+=4;}); Object.keys(scores).forEach(k=>{scores[k].pct=Math.round((scores[k].total/scores[k].max)*100)}); return scores;}
+function saveToLocal(payload){try{const key='classic_assessments'; const ex=JSON.parse(localStorage.getItem(key)||'[]'); ex.push(payload); localStorage.setItem(key,JSON.stringify(ex));}catch(e){}}
+function showReport(){
+  $('screen-quiz').classList.add('hidden'); $('screen-report').classList.remove('hidden');
+  const scores=calculateScores(); const sorted=Object.entries(scores).sort((a,b)=>b[1].pct-a[1].pct); const top2=sorted.slice(0,2), bottom2=sorted.slice(-2).reverse();
+  $('report-title').textContent=`Hi ${state.name}, here is your leadership map`;
+  $('report-meta').textContent=`${state.ecode} • ${state.hq} • ${new Date().toLocaleDateString('en-IN')} • Classic Division`;
+  const n1=DIMS[top2[0][0]], n2=DIMS[top2[1][0]];
+  $('narrative').innerHTML=`<div class="text-[18px] leading-7 font-medium">You lead through <span class="underline decoration-zinc-600 decoration-2">${n1.short.toLowerCase()}</span> and <span class="underline decoration-zinc-600 decoration-2">${n2.short.toLowerCase()}</span>.</div><div class="mt-3 text-zinc-300 leading-6">${n1.strength} ${n2.strength}</div><div class="mt-4 text-[13px] text-zinc-400">Profile: ${sorted.map(s=>`${DIMS[s[0]].short} ${s[1].pct}%`).join(' • ')}</div>`;
+  $('strengths').innerHTML=top2.map(([code,s])=>`<div class="rounded-xl bg-zinc-50 border border-zinc-200 p-4"><div class="flex items-center justify-between"><div class="text-[12px] font-semibold">${DIMS[code].name}</div><div class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-zinc-900 text-white">${s.pct}%</div></div><div class="text-[12px] leading-5 mt-2 text-zinc-600">${DIMS[code].strength}</div></div>`).join('');
+  $('growth').innerHTML=bottom2.map(([code,s])=>`<div class="rounded-xl bg-zinc-50 border border-zinc-200 p-4"><div class="flex items-center justify-between"><div class="text-[12px] font-semibold">${DIMS[code].name}</div><div class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white border">${s.pct}%</div></div><div class="text-[12px] leading-5 mt-2 text-zinc-600">${DIMS[code].build}</div></div>`).join('');
+  const checks=[...top2,...bottom2].map(([c])=>DIMS[c].check); const uniq=[...new Set(checks)].slice(0,5);
+  $('checks').innerHTML=uniq.map(c=>`<li>${c}</li>`).join('')+`<li>Am I balancing today's numbers with tomorrow's capability?</li>`;
+  $('dim-bars').innerHTML=sorted.map(([code,s])=>`<div><div class="flex justify-between text-[11px]"><span class="font-medium">${DIMS[code].short}</span><span>${s.pct}%</span></div><div class="mt-1 h-2 rounded-full bg-zinc-100 overflow-hidden"><div class="h-full bg-zinc-900" style="width:${s.pct}%"></div></div></div>`).join('');
+  $('plan-30-60-90').innerHTML=bottom2.map(([code])=>{
+    const p=PLANS[code]; return `<div class="rounded-2xl border border-zinc-200 bg-[#fbfaf7] p-5"><div class="text-[13px] font-semibold">${p.title}</div><div class="mt-4 grid md:grid-cols-3 gap-5"><div><div class="text-[11px] font-bold tracking-wide bg-zinc-900 text-white inline-block px-2 py-0.5 rounded">30 DAYS</div><ul class="mt-2 space-y-2 text-[12px] leading-5 list-disc pl-4 text-zinc-700">${p.d30.map(x=>`<li>${x}</li>`).join('')}</ul></div><div><div class="text-[11px] font-bold tracking-wide bg-white border inline-block px-2 py-0.5 rounded">60 DAYS</div><ul class="mt-2 space-y-2 text-[12px] leading-5 list-disc pl-4 text-zinc-700">${p.d60.map(x=>`<li>${x}</li>`).join('')}</ul></div><div><div class="text-[11px] font-bold tracking-wide bg-white border inline-block px-2 py-0.5 rounded">90 DAYS</div><ul class="mt-2 space-y-2 text-[12px] leading-5 list-disc pl-4 text-zinc-700">${p.d90.map(x=>`<li>${x}</li>`).join('')}</ul></div></div></div>`;
+  }).join('');
+  setTimeout(()=>drawRadar(scores),100);
+  const payload={ecode:state.ecode,name:state.name,hq:state.hq,date:new Date().toISOString(),scores,answers:state.answers.map((a,i)=>({qId:QUESTIONS[i].id,question:QUESTIONS[i].text,dimension:QUESTIONS[i].dim,chosen:QUESTIONS[i].options[a]?.t||null,points:QUESTIONS[i].options[a]?.p||0}))};
+  saveToLocal(payload); window._lastPayload=payload;
+}
+function drawRadar(scores){
+  const ctx=document.getElementById('radar'); if(!ctx) return;
+  const labels=Object.keys(DIMS).map(k=>DIMS[k].short);
+  const data=Object.keys(DIMS).map(k=>scores[k].pct);
+  if(window.radarChart) window.radarChart.destroy();
+  window.radarChart=new Chart(ctx,{type:'radar',data:{labels,datasets:[{label:'You',data,backgroundColor:'rgba(17,24,39,0.08)',borderColor:'#111827',borderWidth:2,pointBackgroundColor:'#111827'}]},options:{responsive:true,scales:{r:{beginAtZero:true,max:100,ticks:{display:false},pointLabels:{font:{size:10}}}},plugins:{legend:{display:false}}}});
+}
+function downloadJSON(){const p=window._lastPayload; if(!p) return; const blob=new Blob([JSON.stringify(p,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`Classic_FLM_${p.ecode}_${p.name}.json`; a.click(); URL.revokeObjectURL(url);}
+function downloadCSV(){let csv='QNo,Dimension,Question,Chosen Option,Points\n'; QUESTIONS.forEach((q,i)=>{const ans=q.options[state.answers[i]]; const row=[q.id,DIMS[q.dim].short,`"${q.text.replace(/"/g,'""')}"`,`"${(ans?.t||'').replace(/"/g,'""')}"`,ans?.p||0].join(','); csv+=row+'\n';}); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`Classic_FLM_${state.ecode}_${state.name}.csv`; a.click(); URL.revokeObjectURL(url);}
+
+// CLEAN NATIVE PDF — uses the browser's own print engine so text stays crisp
+// and vector-based, and CSS page-break rules stop any card, chart or list
+// from being sliced mid-content. User picks "Save as PDF" in the print dialog.
+function printPDF(){
+  document.title = `Classic_FLM_Report_${state.ecode||''}_${state.name||''}`;
+  if(window.radarChart){ try{ window.radarChart.resize(); }catch(e){} }
+  setTimeout(()=>{ window.print(); }, 60);
+}
+window.addEventListener('beforeprint', ()=>{ if(window.radarChart){ try{ window.radarChart.resize(); }catch(e){} } });
+async function downloadAsImage(){
+  try{
+    const btn=document.getElementById('btn-download-image');
+    if(btn){btn.textContent='Generating...'; btn.disabled=true;}
+    const reportEl=document.getElementById('screen-report');
+    const hideIds=['btn-download-json','btn-download-csv','btn-download-image','btn-print','btn-restart'];
+    let hidden=[];
+    hideIds.forEach(id=>{const el=document.getElementById(id); if(el && el.style.display!=='none'){hidden.push({el,d:el.style.display}); el.style.display='none';}});
+    const canvas=await html2canvas(reportEl,{scale:1.3, backgroundColor:'#f6f5f1', useCORS:true});
+    hidden.forEach(({el,d})=>{el.style.display=d;});
+    const link=document.createElement('a');
+    link.download=`Classic_FLM_Report_${state.ecode}_${state.name}.jpg`;
+    link.href=canvas.toDataURL('image/jpeg',0.85);
+    link.click();
+    if(btn){btn.textContent='Image'; btn.disabled=false;}
+  }catch(e){console.error(e); alert('Image export failed');}
+}
+
+const ADMIN_CODE='classicadmin';
+function openAdmin(){ $('screen-welcome').classList.add('hidden'); $('screen-quiz').classList.add('hidden'); $('screen-report').classList.add('hidden'); $('screen-admin').classList.remove('hidden'); renderAdminLogin(); }
+function renderAdminLogin(){ $('admin-login').classList.remove('hidden'); $('admin-content').classList.add('hidden'); }
+function checkAdminCode(){ const c=$('admin-code').value.trim().toLowerCase(); if(c===ADMIN_CODE){ $('admin-login').classList.add('hidden'); $('admin-content').classList.remove('hidden'); $('admin-login-error').classList.add('hidden'); loadAdminData(); } else { $('admin-login-error').textContent='Wrong code'; $('admin-login-error').classList.remove('hidden'); } }
+function getAllAssessments(){ try{return JSON.parse(localStorage.getItem('classic_assessments')||'[]');}catch(e){return [];} }
+function loadAdminData(filter=''){ let data=getAllAssessments(); if(filter){ const f=filter.toLowerCase(); data=data.filter(d=> `${d.name} ${d.ecode} ${d.hq}`.toLowerCase().includes(f)); } $('admin-total').textContent=data.length; $('admin-hqs').textContent=new Set(data.map(d=>d.hq)).size; let avg=0; if(data.length){ let sum=0; data.forEach(d=>{Object.values(d.scores).forEach(s=>sum+=s.pct)}); avg=Math.round(sum/(data.length*Object.keys(DIMS).length)); } $('admin-avg').textContent=avg+'%'; if(data.length){ let avgScores={}; Object.keys(DIMS).forEach(k=>avgScores[k]=0); data.forEach(d=>{Object.keys(DIMS).forEach(k=>{avgScores[k]+=d.scores[k]?.pct||0});}); Object.keys(avgScores).forEach(k=>avgScores[k]=Math.round(avgScores[k]/data.length)); drawAdminRadar(avgScores); $('admin-dim-bars').innerHTML=Object.entries(avgScores).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div><div class="flex justify-between text-[11px]"><span>${DIMS[k].short}</span><span>${v}%</span></div><div class="mt-1 h-2 rounded-full bg-zinc-100 overflow-hidden"><div class="h-full bg-zinc-900" style="width:${v}%"></div></div></div>`).join(''); } let html=`<table class="w-full text-left"><tr class="text-[10px] text-zinc-500 border-b"><th class="py-2">Date</th><th>Name</th><th>Ecode</th><th>HQ</th><th>Top</th><th>To Build</th><th>Scores</th></tr>`; data.slice().reverse().forEach(d=>{const sorted=Object.entries(d.scores).sort((a,b)=>b[1].pct-a[1].pct); const top=DIMS[sorted[0][0]].short; const low=DIMS[sorted[sorted.length-1][0]].short; const scoresStr=Object.entries(d.scores).map(([k,s])=>`${k}:${s.pct}%`).join(' '); html+=`<tr class="border-b border-zinc-100"><td class="py-2">${new Date(d.date).toLocaleDateString()}</td><td>${d.name}</td><td>${d.ecode}</td><td>${d.hq}</td><td>${top}</td><td>${low}</td><td class="text-[10px]">${scoresStr}</td></tr>`}); html+=`</table>`; if(data.length===0) html=`<div class="text-[12px] text-zinc-500">No data yet.</div>`; $('admin-table').innerHTML=html; }
+let adminRadarChart=null;
+function drawAdminRadar(avgScores){ const ctx=document.getElementById('admin-radar'); if(!ctx) return; if(adminRadarChart) adminRadarChart.destroy(); const labels=Object.keys(DIMS).map(k=>DIMS[k].short); const data=Object.keys(DIMS).map(k=>avgScores[k]||0); adminRadarChart=new Chart(ctx,{type:'radar',data:{labels,datasets:[{label:'Avg',data,backgroundColor:'rgba(17,24,39,0.08)',borderColor:'#111827',borderWidth:2}]},options:{responsive:true,scales:{r:{beginAtZero:true,max:100,ticks:{display:false}}},plugins:{legend:{display:false}}}}); }
+function exportAllAdmin(){ const data=getAllAssessments(); if(!data.length){alert('No data'); return;} let csv='Date,Ecode,Name,HQ,'+Object.keys(DIMS).join(',')+',Top Strength,To Build\n'; data.forEach(d=>{const sorted=Object.entries(d.scores).sort((a,b)=>b[1].pct-a[1].pct); const top=DIMS[sorted[0][0]].short; const low=DIMS[sorted[sorted.length-1][0]].short; const scores=Object.keys(DIMS).map(k=>d.scores[k]?.pct||0).join(','); csv+=`${new Date(d.date).toLocaleDateString()},${d.ecode},"${d.name}",${d.hq},${scores},${top},${low}\n`;}); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`Classic_FLM_All_Data_${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(url); }
+function handleImport(files){ Array.from(files).forEach(file=>{const reader=new FileReader(); reader.onload=e=>{try{const obj=JSON.parse(e.target.result); const key='classic_assessments'; const ex=JSON.parse(localStorage.getItem(key)||'[]'); if(Array.isArray(obj)) ex.push(...obj); else if(obj.ecode) ex.push(obj); localStorage.setItem(key,JSON.stringify(ex)); loadAdminData();}catch(err){console.error(err);}}; reader.readAsText(file);}); }
+
+// INIT LISTENERS - robust
+document.addEventListener('DOMContentLoaded', ()=>{
+  const startBtn=document.getElementById('btn-start');
+  if(startBtn){
+    startBtn.addEventListener('click', (e)=>{ e.preventDefault(); startQuiz(); });
+  }
+  document.getElementById('btn-next')?.addEventListener('click', nextQ);
+  document.getElementById('btn-prev')?.addEventListener('click', prevQ);
+  document.getElementById('btn-download-json')?.addEventListener('click', downloadJSON);
+  document.getElementById('btn-download-csv')?.addEventListener('click', downloadCSV);
+  document.getElementById('btn-print')?.addEventListener('click', printPDF);
+  document.getElementById('btn-download-image')?.addEventListener('click', downloadAsImage);
+  document.getElementById('btn-restart')?.addEventListener('click', ()=>location.reload());
+  document.getElementById('btn-admin-login')?.addEventListener('click', checkAdminCode);
+  document.getElementById('btn-admin-back')?.addEventListener('click', ()=>{location.hash=''; location.reload();});
+  document.getElementById('btn-admin-export-all')?.addEventListener('click', exportAllAdmin);
+  document.getElementById('btn-admin-clear')?.addEventListener('click', ()=>{ if(confirm('Clear all local data?')){ localStorage.removeItem('classic_assessments'); loadAdminData(); } });
+  document.getElementById('admin-search')?.addEventListener('input', e=>loadAdminData(e.target.value));
+  document.getElementById('admin-import')?.addEventListener('change', e=>handleImport(e.target.files));
+
+  // Enter key on inputs
+  ['ecode','pname','hq'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); startQuiz(); } });
+  });
+});
+
+window.addEventListener('load', ()=>{ if(location.hash==='#admin'){ openAdmin(); } });
+document.addEventListener('keydown', e=>{
+  if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==='a'){ openAdmin(); }
+  if($('screen-quiz')?.classList.contains('hidden')) return;
+  if(e.key>='1' && e.key<='4'){
+    const idx=parseInt(e.key)-1;
+    const q=state.shuffled[state.current];
+    if(q.shuffledOptions[idx]){ state.answers[state.current]=q.shuffledOptions[idx].origIndex; renderQuestion(); }
+  } else if(e.key==='Enter'){ nextQ(); }
+});
+</script>
+</body>
+</html>
